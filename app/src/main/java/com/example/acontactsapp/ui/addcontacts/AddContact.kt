@@ -28,10 +28,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.acontactsapp.model.UserDatabase
 import com.example.acontactsapp.nav.AddContact
 import com.example.acontactsapp.nav.Home
 
@@ -41,6 +43,9 @@ fun AddContactPage(controller:NavController){
     val surnameText = remember { mutableStateOf("") }
     val emailText = remember { mutableStateOf("") }
     val phoneText = remember { mutableStateOf("") }
+
+    val db = UserDatabase.getDatabase(LocalContext.current)
+    val addContactViewModel = AddContactViewModel(db)
 
     Box(modifier = Modifier.fillMaxSize().background(color = Color.White)){
         Column(
@@ -121,7 +126,14 @@ fun AddContactPage(controller:NavController){
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(onClick = {},modifier = Modifier.size(50.dp)) {
+                IconButton(
+                    onClick = {addContactViewModel.addUser(
+                        name = nameText.value,
+                        surname = surnameText.value,
+                        email = emailText.value,
+                        phone = phoneText.value
+                    ); controller.navigate(Home)},
+                    modifier = Modifier.size(50.dp)) {
                     Icon(
                         imageVector = Icons.Default.Done,
                         contentDescription = "",

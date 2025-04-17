@@ -25,24 +25,35 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.acontactsapp.model.UserDatabase
+import com.example.acontactsapp.ui.home.DetailsViewModel
+import com.example.acontactsapp.ui.home.HomeViewModel
 
 @Composable
 fun ProfileDialog(
     onDismiss : ()->Unit,
     name:String, surname:String,
-    phone:String
+    phone:String,
+    deleteUser:()->Unit
 ){
+
+    val contactDB = UserDatabase.getDatabase(LocalContext.current)
+    val detailsViewModel = DetailsViewModel(contactDB)
+
+
     Dialog(onDismissRequest = onDismiss) {
         Card(modifier = Modifier
             .size(400.dp)
@@ -76,7 +87,7 @@ fun ProfileDialog(
                     Spacer(modifier = Modifier.size(20.dp))
                     IconButton(onClick = {}, modifier = Modifier.size(40.dp)) { Icon(modifier = Modifier.size(40.dp), imageVector = Icons.Default.Edit, contentDescription = "") }
                     Spacer(modifier = Modifier.size(20.dp))
-                    IconButton(onClick = {}, modifier = Modifier.size(40.dp)) { Icon(modifier = Modifier.size(40.dp), imageVector = Icons.Default.Delete, contentDescription = "") }
+                    IconButton(onClick = {deleteUser(); onDismiss()}, modifier = Modifier.size(40.dp)) { Icon(modifier = Modifier.size(40.dp), imageVector = Icons.Default.Delete, contentDescription = "") }
                 }
                 Spacer(modifier = Modifier.size(10.dp))
                 Text("Phone: $phone", fontSize = 14.sp)

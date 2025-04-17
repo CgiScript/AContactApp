@@ -19,18 +19,21 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.acontactsapp.model.UserDatabase
 import com.example.acontactsapp.model.db
 import com.example.acontactsapp.nav.AddContact
 import com.example.acontactsapp.ui.details.ProfileDialog
@@ -41,7 +44,10 @@ import com.example.acontactsapp.ui.home.components.RecentRow
 
 @Composable
 fun HomePage(controller:NavController){
-    val contactDb = db
+    val contactDB = UserDatabase.getDatabase(LocalContext.current)
+    val homeViewModel = HomeViewModel(contactDB)
+    val contactUserList = homeViewModel.userList.collectAsState()
+
 
     Box(
         modifier = Modifier
@@ -56,16 +62,16 @@ fun HomePage(controller:NavController){
                 HorizontalDivider(thickness = 2.dp, color = Color.Black)
                 Spacer(modifier=Modifier.size(20.dp))
             }
-            item{
-                Text("En son kullanılanlar",
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                RecentRow()
-                Spacer(modifier=Modifier.size(20.dp))
-            }
+//            item{
+//                Text("En son kullanılanlar",
+//                    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+//
+//                    fontSize = 18.sp,
+//                    fontWeight = FontWeight.Bold
+//                )
+//                RecentRow()
+//                Spacer(modifier=Modifier.size(20.dp))
+//            }
             item{
                 Text("Tüm Kişiler",
                     modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
@@ -76,19 +82,23 @@ fun HomePage(controller:NavController){
                 Spacer(modifier=Modifier.size(5.dp))
 
             }
-            items(db.size){
+            items(contactUserList.value.size){
                 val openAlertDialog = remember { mutableStateOf(false) }
                 Entry(
-                    db[it].name, db[it].surName, db[it].email, db[it].number
+                    contactUserList.value[it].name,
+                    contactUserList.value[it].surname,
+                    contactUserList.value[it].email,
+                    contactUserList.value[it].phone
                 ){
                     openAlertDialog.value = true
                 }
                 if(openAlertDialog.value){
                     ProfileDialog(
                         onDismiss = {openAlertDialog.value = false},
-                        name = db[it].name,
-                        surname = db[it].surName,
-                        phone = db[it].number
+                        name = contactUserList.value[it].name,
+                        surname = contactUserList.value[it].surname,
+                        phone = contactUserList.value[it].phone,
+                        deleteUser = {homeViewModel.deleteUser(contactUserList.value[it].phone)}
                     )
                 }
                 Spacer(modifier = Modifier.size(10.dp))
