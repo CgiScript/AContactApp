@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.acontactsapp.model.UserDatabase
-import com.example.acontactsapp.ui.home.DetailsViewModel
 import com.example.acontactsapp.ui.home.HomeViewModel
 
 @Composable
@@ -49,10 +48,6 @@ fun ProfileDialog(
     phone:String,
     deleteUser:()->Unit
 ){
-
-    val contactDB = UserDatabase.getDatabase(LocalContext.current)
-    val detailsViewModel = DetailsViewModel(contactDB)
-
 
     Dialog(onDismissRequest = onDismiss) {
         Card(modifier = Modifier
